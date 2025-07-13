@@ -1,0 +1,18 @@
+class Solution {
+public:
+    string processStr(std::string s) {
+        vector<char> res;
+        for (char ch : s) {
+            if (ch != '*' && ch != '#' && ch != '%') {
+                res.push_back(ch);
+            } else if (ch == '#') {
+                res.insert(res.end(), res.begin(), res.end());
+            } else if (ch == '%') {
+                reverse(res.begin(), res.end());
+            } else { 
+                if (!res.empty()) res.pop_back();
+            }
+        }
+        return string(res.begin(), res.end());
+    }
+};
