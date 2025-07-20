@@ -1,0 +1,49 @@
+struct Trie {
+    string s;
+    unordered_map<string, Trie*> c;
+};
+
+class Solution {
+public:
+    vector<vector<string>> deleteDuplicateFolder(vector<vector<string>>& p) {
+        Trie* r = new Trie();
+        for (auto& v : p) {
+            Trie* cur = r;
+            for (auto& x : v) {
+                if (!cur->c.count(x)) cur->c[x] = new Trie();
+                cur = cur->c[x];
+            }
+        }
+
+        unordered_map<string, int> m;
+        function<void(Trie*)> dfs = [&](Trie* t) {
+            if (t->c.empty()) return;
+            vector<string> tmp;
+            for (auto& [k, v] : t->c) {
+                dfs(v);
+                tmp.push_back(k + "(" + v->s + ")");
+            }
+            sort(tmp.begin(), tmp.end());
+            for (auto& s : tmp) t->s += move(s);
+            ++m[t->s];
+        };
+
+        dfs(r);
+
+        vector<vector<string>> res;
+        vector<string> path;
+
+        function<void(Trie*)> go = [&](Trie* t) {
+            if (m[t->s] > 1) return;
+            if (!path.empty()) res.push_back(path);
+            for (auto& [k, v] : t->c) {
+                path.push_back(k);
+                go(v);
+                path.pop_back();
+            }
+        };
+
+        go(r);
+        return res;
+    }
+};
